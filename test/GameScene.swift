@@ -1,87 +1,88 @@
-//
-//  GameScene.swift
-//  test
-//
-//  Created by Mitchell Hudson on 9/14/18.
-//  Copyright © 2018 Mitchell Hudson. All rights reserved.
-//
+
 
 import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
     
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+    var scoreLabel: SKLabelNode!
+    var score = 0
     
     override func didMove(to view: SKView) {
-        
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
+        // Make a repeating action that will call the method makeBox below
+        let wait = SKAction.wait(forDuration: 1.5) // Make a wait
+        // This block will call the function below
+        let makeABox = SKAction.run {
+            self.makeBox()  // You must use self inside a block!
         }
         
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
+        let seq = SKAction.sequence([wait, makeABox])   // Make a sequence
+        let rep = SKAction.repeatForever(seq)           // Make a repeat forever
+
+        run(rep) // Run the repeat action and the sequence runs forever!
+    }
+    
+    
+    // -----------------------------------------------------------------
+    // This function makes boxes
+    
+    func makeBox() {
+        let box = Box()
         
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
+        // Get a random position within the width of the scene
+        let x = CGFloat( random(n: Int(size.width - 40)) + 20)
+        
+        // Position the box
+        box.position.x = x
+        box.position.y = 0
+        // Add the box
+        
+        addChild(box)
+        
+        // Create an action to move the box up the screen
+        let moveUp = SKAction.moveTo(y: size.height, duration: 4)
+        let seq = SKAction.sequence([moveUp, .removeFromParent()])
+        box.run(seq)
     }
     
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
+    // Returns a random int from 0 to n - 1
+    func random(n: Int) -> Int {
+        return Int(arc4random()) % n
     }
     
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-    }
+    // ------------------------------------------------------------------------
+    // Handle touch events
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
+        // touches is a set, get the first element of the set
+        if let touch = touches.first {
+            // Get the location of this touch in the scene
+            let location = touch.location(in: self)
+            let node = atPoint(location)    // Find the node at this location
+            if node.name == "box" {         // Check the name of the node
+                node.removeFromParent()     // If it's "box" remove it
+                //                score += 1
+                //                scoreLabel.text = "Score: \(score)"
+            }
         }
-        
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
-    }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
     
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
     
+    func outoforder(n: Int) {
+        var start = 0
+        var end = n
+        for i in 0 ... n {
+            if i % 2 == 0 {
+                print(start)
+                start += 1
+            } else {
+                print(end)
+                end -= 1
+            }
+        }
+    }
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered

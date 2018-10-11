@@ -1,10 +1,3 @@
-//
-//  GameViewController.swift
-//  test
-//
-//  Created by Mitchell Hudson on 9/14/18.
-//  Copyright © 2018 Mitchell Hudson. All rights reserved.
-//
 
 import UIKit
 import SpriteKit
@@ -17,13 +10,13 @@ class GameViewController: UIViewController {
         
         if let view = self.view as! SKView? {
             // Load the SKScene from 'GameScene.sks'
-            if let scene = SKScene(fileNamed: "GameScene") {
-                // Set the scale mode to scale to fit the window
-                scene.scaleMode = .aspectFill
-                
-                // Present the scene
-                view.presentScene(scene)
-            }
+            let scene = GameScene(size: view.bounds.size)
+            // Set the scale mode to scale to fit the window
+            scene.scaleMode = .aspectFill
+            
+            // Present the scene
+            view.presentScene(scene)
+            
             
             view.ignoresSiblingOrder = true
             

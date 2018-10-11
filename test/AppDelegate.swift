@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  test
-//
-//  Created by Mitchell Hudson on 9/14/18.
-//  Copyright © 2018 Mitchell Hudson. All rights reserved.
-//
 
 import UIKit
 
